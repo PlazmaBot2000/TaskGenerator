@@ -3,9 +3,9 @@ import random
 #Parameters
     #Comment: questions_count should be < than obj_count
     #Comment: statements_count should be < than obj_count
-statements_count = 5
-questions_count = 3
-obj_count = 5
+statements_count = 27
+questions_count = 27
+obj_count = 27
 obj = []
 actions = []
 questions = []
@@ -37,19 +37,29 @@ def print_array_decorator(func):
     return wrapper
 
 
-@print_array_decorator
-def gen_obj():
-    for i in range(obj_count):
-        obj.append(chr(ord('@')+(i+1)) + ' ')
-        actions.append("true")
-    return obj, actions
-
 
 #                                                        _____ _   _ _   _  ____ _____ ___ ___  _   _ ____  
 #                                                       |  ___| | | | \ | |/ ___|_   _|_ _/ _ \| \ | / ___| 
 #=======================================================| |_  | | | |  \| | |     | |  | | | | |  \| \___ \==========================================
 #=======================================================|  _| | |_| | |\  | |___  | |  | | |_| | |\  |___) |=========================================
 #                                                       |_|    \___/|_| \_|\____| |_| |___\___/|_| \_|____/ 
+
+@print_array_decorator
+def readfile_to_array(data):
+    with open(data, 'r') as file:
+        lines = file.readlines()
+        processed_data = [item.strip() for item in lines]
+    return processed_data
+
+
+
+
+#@print_array_decorator
+def gen_obj():
+    for i in range(obj_count):
+        obj.append(chr(ord('@')+(i+1)) + ' ')
+        actions.append("true")
+    return obj, actions
 
 
 
@@ -96,10 +106,9 @@ def gen_statements():
 #===============================================================| |\/| | / _ \  | ||  \| |===========================================================
 #===============================================================| |  | |/ ___ \ | || |\  |===========================================================
 #                                                               |_|  |_/_/   \_\___|_| \_|
-
-print("Objects:")
-gen_obj()
-print("Утверждения:")
-gen_statements()
-print("Правда ли что:")
-gen_questions()
+#gen_obj()
+#print("Утверждения:")
+#gen_statements()
+#print("Правда ли что:")
+#gen_questions()
+readfile_to_array("data.txt")
