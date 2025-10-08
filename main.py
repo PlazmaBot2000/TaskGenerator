@@ -31,24 +31,22 @@ def print_result_decorator(func):
 
 
 
-def print_array_decorator(func):
-    def wrapper(*args, **kwargs):
-        result = func(*args, **kwargs)
-        for i in range(len(result)):
-            print(result[i])
-        
-        return result
-    return wrapper
-
-
-
 #                                                        _____ _   _ _   _  ____ _____ ___ ___  _   _ ____  
 #                                                       |  ___| | | | \ | |/ ___|_   _|_ _/ _ \| \ | / ___| 
 #=======================================================| |_  | | | |  \| | |     | |  | | | | |  \| \___ \==========================================
 #=======================================================|  _| | |_| | |\  | |___  | |  | | |_| | |\  |___) |=========================================
 #                                                       |_|    \___/|_| \_|\____| |_| |___\___/|_| \_|____/ 
 
-#@print_array_decorator
+
+
+def print_array(A):
+    for i in range(len(A)):
+        print(A[i])
+    print()
+
+
+
+#@print_result_decorator
 def readfile_to_array(data):
     with open(data, 'r') as file:
         lines = file.readlines()
@@ -57,8 +55,7 @@ def readfile_to_array(data):
 
 
 
-
-#@print_array_decorator
+#@print_result_decorator
 def gen_obj():
     obj_for_generation = readfile_to_array(objects_file_name)
     for i in range(obj_count):
@@ -68,7 +65,7 @@ def gen_obj():
     return obj
 
 
-#@print_array_decorator
+#@print_result_decorator
 def gen_actions():
     actions_for_generation = readfile_to_array(actions_file_name)
     for i in range(obj_count):
@@ -78,8 +75,7 @@ def gen_actions():
     return actions
 
 
-
-@print_array_decorator
+#@print_result_decorator
 def gen_questions():
     obj_for_questions = obj.copy()
     actions_for_questions = actions.copy()
@@ -87,7 +83,7 @@ def gen_questions():
 
         index = random.randint(0, (len(obj_for_questions) - 1)) 
         if random.randint(1, 3) == 1:
-            prefix = " is not "
+            prefix = " не "
         else:
             prefix = " "
         
@@ -98,8 +94,7 @@ def gen_questions():
     return questions
 
 
-
-@print_array_decorator
+#@print_result_decorator
 def gen_statements():
     obj_for_statements = obj.copy()
     actions_for_statements = actions.copy()
@@ -107,7 +102,7 @@ def gen_statements():
 
         index = random.randint(0, (len(obj_for_statements) - 1)) 
         if random.randint(1, 2) == 1:
-            prefix = " is not "
+            prefix = " не "
         else:
             prefix = " "
         
@@ -129,6 +124,6 @@ def gen_statements():
 gen_obj()
 gen_actions()
 print("Утверждения:")
-gen_statements()
+print_array(gen_statements())
 print("Правда ли что:")
-gen_questions()
+print_array(gen_questions())
