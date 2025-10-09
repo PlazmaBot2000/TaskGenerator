@@ -1,25 +1,17 @@
 import random
 import yaml
 
+class object_pair:
+    def __init__(self, object, prefix, action):
+        self.object = object
+        self.prefix = prefix
+        self.action = action
+    def view(self):
+        return self.object + self.prefix + self.action
+
 with open("config.yml", 'r') as cfg:
     config = yaml.load(cfg, Loader=yaml.SafeLoader)
 
-
-
-#                                                      ____  _____ ____ ___  ____      _  _____ ___  ____  ____  
-#                                                     |  _ \| ____/ ___/ _ \|  _ \    / \|_   _/ _ \|  _ \/ ___| 
-#=====================================================| | | |  _|| |  | | | | |_) |  / _ \ | || | | | |_) \___ \====================================
-#=====================================================| |_| | |__| |__| |_| |  _ <  / ___ \| || |_| |  _ < ___) |===================================
-#                                                     |____/|_____\____\___/|_| \_\/_/   \_\_| \___/|_| \_\____/ 
-
-
-
-def print_result_decorator(func):
-    def wrapper(*args, **kwargs):
-        result = func(*args, **kwargs)
-        print("Result:", result)
-        return result
-    return wrapper
 
 
 
@@ -29,63 +21,63 @@ def print_result_decorator(func):
 #=======================================================|  _| | |_| | |\  | |___  | |  | | |_| | |\  |___) |=========================================
 #                                                       |_|    \___/|_| \_|\____| |_| |___\___/|_| \_|____/ 
 
-
-
-def print_array(A):
-    for i in range(len(A)):
-        print("  " + A[i])
+def print_pairs_array(a):
+    for i in range(len(a)):
+        print("  " + a[i].view())
     print()
 
 
+def generate_from_file(objects_file_name, actions_file_name, count):
 
-#@print_result_decorator
-def generate_from_file(file_name, count):
     result_array = []
-    with open(file_name, 'r') as file:
-        lines = file.readlines()
-        items_for_generation = [item.strip() for item in lines]
 
-    for i in range(count):
-        index = random.randint(0, (len(items_for_generation) - 1)) 
-        result_array.append(items_for_generation[index])
-        items_for_generation.pop(index)
+    with open(objects_file_name, 'r') as obj_file:
+        lines = obj_file.readlines()
+        obj_for_generation = [item.strip() for item in lines]
+    with open(actions_file_name, 'r') as actions_file:
+        lines = actions_file.readlines()
+        actions_for_generation = [item.strip() for item in lines]
+
+    for _ in range(count):
+        obj_index = random.randint(0, (len(obj_for_generation) - 1)) 
+        actions_index = random.randint(0, (len(actions_for_generation) - 1)) 
+
+        result_array.append(object_pair(obj_for_generation[obj_index], ' ', actions_for_generation[actions_index]))
+        obj_for_generation.pop(obj_index)
+        actions_for_generation.pop(actions_index)
     return result_array
-    
 
 
-#@print_result_decorator
-def gen_pairs(object_for_generation, actions_for_generation, count):
-    obj_for_result = object_for_generation.copy()
-    actions_for_result = actions_for_generation.copy()
+def gen_pairs(objects_and_actions_array, count):
     result_array = []
-    for i in range(count):
 
-        index = random.randint(0, (len(obj_for_result) - 1)) 
+    for _ in range(count):
+        index = random.randint(0, (len(objects_and_actions_array) - 1))
         if random.randint(1, 3) == 1:
-            prefix = " не "
+            objects_and_actions_array[index].prefix = " не "
         else:
-            prefix = " "
-        
-        result_array.append(obj_for_result[index] + prefix + actions_for_result[index])
-        obj_for_result.pop(index)
-        actions_for_result.pop(index)
+            objects_and_actions_array[index].prefix = " "
 
+        result_array.append(objects_and_actions_array[index])
+        objects_and_actions_array.pop(index)
     return result_array
 
 
 def new_task():
-    obj = generate_from_file(config['objects_file_name'], config['objects_count'])
-    actions = generate_from_file(config['actions_file_name'], config['objects_count'])
-
+    objects_and_actions = generate_from_file(config['objects_file_name'], config['actions_file_name'], config['objects_count']) 
+    statements = gen_pairs(objects_and_actions.copy(), config['statements_count'])
+    questions = gen_pairs(objects_and_actions.copy(), config['questions_count'])
     print("Утверждения:")
-    print_array(gen_pairs(obj, actions, config['statements_count']))
+    print_pairs_array(statements)
     print("Правда ли что:")
-    print_array(gen_pairs(obj, actions,  config['questions_count']))
+    print_pairs_array(questions)
+
 #                                                                __  __    _    ___ _   _ 
 #                                                               |  \/  |  / \  |_ _| \ | |
 #===============================================================| |\/| | / _ \  | ||  \| |===========================================================
 #===============================================================| |  | |/ ___ \ | || |\  |===========================================================
 #                                                               |_|  |_/_/   \_\___|_| \_|
+
 for i in range(1, config['tasks_count']):
     print('Вариант ', i)
     new_task()
