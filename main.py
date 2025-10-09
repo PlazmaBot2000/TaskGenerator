@@ -1,15 +1,8 @@
 import random
+import yaml
 
-#Parameters
-    #Comment: questions_count should be < than obj_count
-    #Comment: statements_count should be < than obj_count
-statements_count = 2
-questions_count = 3
-obj_count = 5
-
-    #Comment: filenames should be not empty
-objects_file_name = "objects.txt"
-actions_file_name = "actions.txt"
+with open("config.yml", 'r') as cfg:
+    config = yaml.load(cfg, Loader=yaml.SafeLoader)
 
 
 
@@ -46,18 +39,12 @@ def print_array(A):
 
 
 #@print_result_decorator
-def readfile_to_array(data):
-    with open(data, 'r') as file:
-        lines = file.readlines()
-        processed_data = [item.strip() for item in lines]
-    return processed_data
-
-
-
-#@print_result_decorator
 def generate_from_file(file_name, count):
     result_array = []
-    items_for_generation = readfile_to_array(file_name)
+    with open(file_name, 'r') as file:
+        lines = file.readlines()
+        items_for_generation = [item.strip() for item in lines]
+
     for i in range(count):
         index = random.randint(0, (len(items_for_generation) - 1)) 
         result_array.append(items_for_generation[index])
@@ -86,15 +73,19 @@ def gen_pairs(object_for_generation, actions_for_generation, count):
     return result_array
 
 
+def new_task():
+    obj = generate_from_file(config['objects_file_name'], config['objects_count'])
+    actions = generate_from_file(config['actions_file_name'], config['objects_count'])
 
+    print("Утверждения:")
+    print_array(gen_pairs(obj, actions, config['statements_count']))
+    print("Правда ли что:")
+    print_array(gen_pairs(obj, actions,  config['questions_count']))
 #                                                                __  __    _    ___ _   _ 
 #                                                               |  \/  |  / \  |_ _| \ | |
 #===============================================================| |\/| | / _ \  | ||  \| |===========================================================
 #===============================================================| |  | |/ ___ \ | || |\  |===========================================================
 #                                                               |_|  |_/_/   \_\___|_| \_|
-obj = generate_from_file(objects_file_name, obj_count)
-actions = generate_from_file(actions_file_name, obj_count)
-print("Утверждения:")
-print_array(gen_pairs(obj, actions, statements_count))
-print("Правда ли что:")
-print_array(gen_pairs(obj, actions,  questions_count))
+for i in range(1, config['tasks_count']):
+    print('Вариант ', i)
+    new_task()
