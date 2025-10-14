@@ -1,14 +1,6 @@
 import random
 import yaml
 
-class object_pair:
-    def __init__(self, object, prefix, action):
-        self.object = object
-        self.prefix = prefix
-        self.action = action
-    def view(self):
-        return self.object + self.prefix + self.action
-
 with open("config.yml", 'r') as cfg:
     config = yaml.load(cfg, Loader=yaml.SafeLoader)
 
@@ -22,8 +14,8 @@ with open("config.yml", 'r') as cfg:
 #                                                       |_|    \___/|_| \_|\____| |_| |___\___/|_| \_|____/ 
 
 def print_pairs_array(a):
-    for i in range(len(a)):
-        print("  " + a[i].view())
+    for i in a:
+        print("  " + i[0] + i[1] + i[2])
     print()
 
 
@@ -42,7 +34,7 @@ def generate_from_file(objects_file_name, actions_file_name, count):
         obj_index = random.randint(0, (len(obj_for_generation) - 1)) 
         actions_index = random.randint(0, (len(actions_for_generation) - 1)) 
 
-        result_array.append(object_pair(obj_for_generation[obj_index], ' ', actions_for_generation[actions_index]))
+        result_array.append([obj_for_generation[obj_index], ' ', actions_for_generation[actions_index]])
         obj_for_generation.pop(obj_index)
         actions_for_generation.pop(actions_index)
     return result_array
@@ -54,9 +46,9 @@ def gen_pairs(objects_and_actions_array, count):
     for _ in range(count):
         index = random.randint(0, (len(objects_and_actions_array) - 1))
         if random.randint(1, 3) == 1:
-            objects_and_actions_array[index].prefix = " не "
+            objects_and_actions_array[index][1] = " не "
         else:
-            objects_and_actions_array[index].prefix = " "
+            objects_and_actions_array[index][1] = " "
 
         result_array.append(objects_and_actions_array[index])
         objects_and_actions_array.pop(index)
