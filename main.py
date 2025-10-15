@@ -22,22 +22,29 @@ def generate_from_file():
     result_array = []
 
     for _ in range(config['objects_count']):
-        result_array.append(tuple([objects_from_file.pop(random.randint(0, (len(objects_from_file) - 1))), ' ',
-actions_from_file.pop(random.randint(0, (len(actions_from_file) - 1)))]))
+        result_array.append(([objects_from_file.pop(random.randint(0, (len(objects_from_file) - 1))), ' ', actions_from_file.pop(random.randint(0, (len(actions_from_file) - 1)))]))
         
     return result_array
 
 
 
 def gen_pairs(pairs_array, count):
+
     result_array = []
 
     for _ in range(count):
         index = random.randint(0, (len(pairs_array) - 1))
-        result_array.append((pairs_array[index][0], random.choice([" ", " не "]), pairs_array[index][2] ))
-        pairs_array.pop(index)
+        result_array.append((pairs_array[index][0], random.choice([" ", " не "]), pairs_array.pop(index)[2]))
+
     return result_array
 
+
+def gen_condition(statements_array):
+
+    if random.randint(1,2) == 1 and len(statements_array) > 1:
+        return (statements_array.pop(random.randint(0, (len(statements_array) - 1))), random.choice([" и ", " или "]), statements_array.pop(random.randint(0, (len(statements_array) - 1))))
+    else:
+        return (statements_array.pop(random.randint(0, (len(statements_array) - 1))), '', '')
 
 
 def print_pairs(a):
@@ -55,6 +62,7 @@ def new_task():
 
     print("Утверждения:")
     print_pairs(statements)
+    print(gen_condition(statements.copy()))
     print("Правда ли что:")
     print_pairs(questions)
 
@@ -63,7 +71,6 @@ def new_task():
 #===============================================================| |\/| | / _ \  | ||  \| |===========================================================
 #===============================================================| |  | |/ ___ \ | || |\  |===========================================================
 #                                                               |_|  |_/_/   \_\___|_| \_|
-
-for i in range(1, config['tasks_count']):
+for i in range(1, config['tasks_count'] + 1):
     print('Вариант ', i)
     new_task()
