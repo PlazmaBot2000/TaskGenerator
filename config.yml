@@ -1,9 +1,8 @@
-#Comment: questions_count should be < than objects_count
-#Comment: statements_count should be < than objects_count
+#Comment: objects_count should be >= than statements_count + questions_count
 tasks_count: 3
 statements_count: 5
 questions_count: 3
-objects_count: 5
+objects_count: 8
 
 #Comment: filenames should be not empty
 objects_file_name: objects.txt

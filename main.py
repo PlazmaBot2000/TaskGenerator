@@ -39,47 +39,39 @@ def gen_pairs(pairs_array, count):
     return result_array
 
 
-def gen_condition(statements_array):
-
-    if random.randint(1,2) == 1 and len(statements_array) > 1:
-        return (statements_array.pop(random.randint(0, (len(statements_array) - 1))), random.choice([" и ", ", или "]), statements_array.pop(random.randint(0, (len(statements_array) - 1))))
-    else:
-        return (statements_array.pop(random.randint(0, (len(statements_array) - 1))), '', ('','',''))
-
-
-def gen_conditions_list(statements_array, questions_array):
+def gen_conditions(statements_array, questions_array):
     result = []
     
     for i in questions_array:
-        result.append((gen_condition(statements_array), i))
+        if random.randint(1,2) == 1 and len(statements_array) > 1:
+            result.append(((statements_array.pop(random.randint(0, (len(statements_array) - 1))), random.choice([" и ", ", или "]), statements_array.pop(random.randint(0, (len(statements_array) - 1)))), i))
+        else:
+            result.append(((statements_array.pop(random.randint(0, (len(statements_array) - 1))), '', ''), i))
         statements_array.append(i)
 
     return result
 
 
-def print_pairs(a):
-    for i in a:
-        print("  " + i[0] + i[1] + i[2] + ".")
-    print()
-
-
-def print_conditions(conditions):
-    print("Условия:")
-    for i in conditions:
-        print("  Если " + i[0][0][0] + i[0][0][1] + i[0][0][2] + i[0][1] + i[0][2][0] + i[0][2][1] + i[0][2][2] + ", то " + i[1][0] + i[1][1] + i[1][2] + ".")
-    print()
-
-
 def new_task():
-    objects_and_actions = generate_from_file() 
-    statements = gen_pairs(objects_and_actions.copy(), config['statements_count'])
-    questions = gen_pairs(objects_and_actions.copy(), config['questions_count'])
+    objects_and_actions = generate_from_file()
 
-    print("Утверждения:")
-    print_pairs(statements)
-    print_conditions(gen_conditions_list(statements.copy(), questions.copy()))
-    print("Правда ли что:")
-    print_pairs(questions)
+    statements = gen_pairs(objects_and_actions, config['statements_count'])
+    questions = gen_pairs(objects_and_actions.copy(), config['questions_count'])
+    conditions = gen_conditions(statements.copy(), questions.copy())
+
+    print("\nУтверждения:")
+    for i in statements:
+        print("  ", *i,sep="", end=".\n")
+
+
+    print("\nУсловия:")
+    for i in conditions:
+        print("  Если " + "".join(i[0][0]) + i[0][1] + "".join(i[0][2]) + ", то " + "".join(i[1]) + ".")
+
+
+    print("\nПравда ли что:")
+    for i in questions:
+        print("  ", *i,sep="", end=".\n")
 
 #                                                                __  __    _    ___ _   _ 
 #                                                               |  \/  |  / \  |_ _| \ | |
@@ -87,5 +79,5 @@ def new_task():
 #===============================================================| |  | |/ ___ \ | || |\  |===========================================================
 #                                                               |_|  |_/_/   \_\___|_| \_|
 for i in range(1, config['tasks_count'] + 1):
-    print('Вариант ', i)
+    print("\n=============== Вариант ", i, "===============")
     new_task()
