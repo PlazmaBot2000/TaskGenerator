@@ -1,9 +1,8 @@
 #Comment: questions_count should be < than objects_count
 #Comment: statements_count should be < than objects_count
-tasks_count: 15
-statements_count: 2
+tasks_count: 3
+statements_count: 5
 questions_count: 3
-conditions_count: 4
 objects_count: 5
 
 #Comment: filenames should be not empty

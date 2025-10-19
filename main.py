@@ -42,17 +42,32 @@ def gen_pairs(pairs_array, count):
 def gen_condition(statements_array):
 
     if random.randint(1,2) == 1 and len(statements_array) > 1:
-        return (statements_array.pop(random.randint(0, (len(statements_array) - 1))), random.choice([" и ", " или "]), statements_array.pop(random.randint(0, (len(statements_array) - 1))))
+        return (statements_array.pop(random.randint(0, (len(statements_array) - 1))), random.choice([" и ", ", или "]), statements_array.pop(random.randint(0, (len(statements_array) - 1))))
     else:
-        return (statements_array.pop(random.randint(0, (len(statements_array) - 1))), '', '')
+        return (statements_array.pop(random.randint(0, (len(statements_array) - 1))), '', ('','',''))
+
+
+def gen_conditions_list(statements_array, questions_array):
+    result = []
+    
+    for i in questions_array:
+        result.append((gen_condition(statements_array), i))
+        statements_array.append(i)
+
+    return result
 
 
 def print_pairs(a):
     for i in a:
-        print("  " + i[0] + i[1] + i[2])
+        print("  " + i[0] + i[1] + i[2] + ".")
     print()
 
 
+def print_conditions(conditions):
+    print("Условия:")
+    for i in conditions:
+        print("  Если " + i[0][0][0] + i[0][0][1] + i[0][0][2] + i[0][1] + i[0][2][0] + i[0][2][1] + i[0][2][2] + ", то " + i[1][0] + i[1][1] + i[1][2] + ".")
+    print()
 
 
 def new_task():
@@ -62,7 +77,7 @@ def new_task():
 
     print("Утверждения:")
     print_pairs(statements)
-    print(gen_condition(statements.copy()))
+    print_conditions(gen_conditions_list(statements.copy(), questions.copy()))
     print("Правда ли что:")
     print_pairs(questions)
 
