@@ -60,20 +60,17 @@ def new_task():
     random.shuffle(questions)
     conditions = gen_conditions(statements.copy(), questions.copy())
 
-    print("\nУтверждения:")
     for i in statements:
         print("  ", *i,sep="", end=".\n")
 
-
-    print("\nУсловия:")
     random.shuffle(conditions)
+    print()
     for i in conditions:
         print("  Если " + "".join(i[0][0]) + i[0][1] + "".join(i[0][2]) + ", то " + "".join(i[1]) + ".")
 
-
-    print("\nПравда ли что:")
+    print()
     for i in questions:
-        print("  ", *i,sep="", end=".\n")
+        print(" ", (i[1].replace(" ", "")+" "+i[2].replace(" ", "")).lstrip().capitalize(), "ли", i[0].lower(), end="?\n")
 
 #                                                                __  __    _    ___ _   _ 
 #                                                               |  \/  |  / \  |_ _| \ | |
