@@ -70,7 +70,7 @@ def new_task():
 
     print()
     for i in questions:
-        print(" ", (i[1].replace(" ", "")+" "+i[2].replace(" ", "")).lstrip().capitalize(), "ли", i[0].lower(), end="?\n")
+        print(" ", f"{i[1].replace(' ', '')} {i[2].replace(' ', '')}".lstrip().capitalize(), "ли", i[0].lower(), end="?\n")
 
 #                                                                __  __    _    ___ _   _ 
 #                                                               |  \/  |  / \  |_ _| \ | |
