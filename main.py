@@ -44,9 +44,9 @@ def gen_conditions(statements_array, questions_array):
     
     for i in questions_array:
         if random.randint(1,2) == 1 and len(statements_array) > 1:
-            result.append(((statements_array.pop(random.randint(0, (len(statements_array) - 1))), random.choice([" и ", ", или "]), statements_array.pop(random.randint(0, (len(statements_array) - 1)))), i))
+            result.append(((statements_array.pop(random.randint(0, (len(statements_array) - 1))), random.choice([" и ", ", или "]), statements_array.pop(random.randint(0, (len(statements_array) - 1)))), (i[0],random.choice([" ", " не "]), i[2])))
         else:
-            result.append(((statements_array.pop(random.randint(0, (len(statements_array) - 1))), '', ''), i))
+            result.append(((statements_array.pop(random.randint(0, (len(statements_array) - 1))), '', ''), (i[0],random.choice([" ", " не "]), i[2])))
         statements_array.append(i)
 
     return result
@@ -57,6 +57,7 @@ def new_task():
 
     statements = gen_pairs(objects_and_actions, config['statements_count'])
     questions = gen_pairs(objects_and_actions.copy(), config['questions_count'])
+    random.shuffle(questions)
     conditions = gen_conditions(statements.copy(), questions.copy())
 
     print("\nУтверждения:")
@@ -65,6 +66,7 @@ def new_task():
 
 
     print("\nУсловия:")
+    random.shuffle(conditions)
     for i in conditions:
         print("  Если " + "".join(i[0][0]) + i[0][1] + "".join(i[0][2]) + ", то " + "".join(i[1]) + ".")
 
