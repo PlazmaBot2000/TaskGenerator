@@ -15,8 +15,30 @@ if config['output_file_name'] != "": sys.stdout = open(config['output_file_name'
 def file_to_array(filename):
     with open(filename, 'r') as file: return [item.strip() for item in file.readlines()]
 
-def generate_from_file():
- 
+
+def select_statement(usage_c, statements_a):
+    index = random.randint(0, (len(statements_a) - 1))
+    if usage_c[index] == 1:
+        del usage_c[index]
+        return statements_a.pop(index)
+    else:
+        usage_c[index] -= 1
+        return statements_a[index]
+
+
+def subtract(l1, l2):
+    result = []
+    for i in l1:
+        if not (i in l2):
+            result.append(i)
+    return result
+
+
+
+
+
+
+def get_from_file(): 
     objects_from_file, actions_from_file = file_to_array(config['objects_file_name']), file_to_array(config['actions_file_name'])
 
     result_array = []
@@ -27,9 +49,7 @@ def generate_from_file():
     return result_array
 
 
-
 def gen_pairs(pairs_array, count):
-
     result_array = []
 
     for _ in range(count):
@@ -39,44 +59,34 @@ def gen_pairs(pairs_array, count):
     return result_array
 
 
-def select_statement(usage_count, statements_array):
-    index = random.randint(0, (len(statements_array) - 1))
-    if usage_count[index] == 1:
-        del usage_count[index]
-        return statements_array.pop(index)
-    else:
-        usage_count[index] -= 1
-        return statements_array[index]
-
-
 def gen_conditions(statements_array, questions_array):
-    result = []
+    random.shuffle(questions_array)
     usage_count = [random.randint(config['reuse_count'][0], config['reuse_count'][1])] * len(statements_array)
+    result = []
 
     for i in questions_array:
         if random.choice([True, False]) and len(statements_array) > 1: 
-            result.append((select_statement(usage_count, statements_array), random.choice([" и ", ", или "]), select_statement(usage_count, statements_array), (i[0],random.choice([" ", " не "]), i[2])))
+            first, second = select_statement(usage_count, statements_array), select_statement(usage_count, statements_array)
+
+            result.append((first, random.choice([" и ", ", или "]), second if second != first else ('', '', ''), (i[0],random.choice([" ", " не "]), i[2])))
         else:
             result.append((select_statement(usage_count, statements_array), '', ('', '', ''), (i[0],random.choice([" ", " не "]), i[2])))
 
         statements_array.append(i)
         usage_count.append(random.randint(config['reuse_count'][0], config['reuse_count'][1]))
- 
+    random.shuffle(result)
     return result
 
 
 def new_task():
-    objects_and_actions = generate_from_file()
-
-    statements = gen_pairs(objects_and_actions, config['statements_count'])
-    questions = gen_pairs(objects_and_actions.copy(), config['questions_count'])
-    random.shuffle(questions)
-    conditions = gen_conditions(statements.copy(), questions.copy())
+    objects_and_actions = get_from_file()
+    statements, questions = gen_pairs(objects_and_actions, config['statements_count']), gen_pairs(objects_and_actions, config['questions_count'])
+    extra_pairs = gen_pairs(objects_and_actions, (config['conditions_count'] - config['questions_count']) if config['conditions_count'] - config['questions_count'] > 0 else 0) 
+    conditions = gen_conditions(statements.copy(), questions.copy() + extra_pairs)
 
     for i in statements:
         print("  ", *i,sep="", end=".\n")
-
-    random.shuffle(conditions)
+ 
     print()
     for i in conditions:
         print("  Если " + "".join(i[0]).lower() + i[1] + "".join(i[2]).lower() + ", то " + "".join(i[3]).lower() + ".")
