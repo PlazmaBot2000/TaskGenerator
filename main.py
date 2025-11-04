@@ -1,10 +1,9 @@
 import random
 import yaml
+import sys
 
-with open("config.yml", 'r') as cfg:
-    config = yaml.load(cfg, Loader=yaml.SafeLoader)
-
-
+with open("config.yml", 'r') as cfg: config = yaml.load(cfg, Loader=yaml.SafeLoader)
+if config['output_file_name'] != "": sys.stdout = open(config['output_file_name'], 'w', encoding='utf-8')
 
 
 #                                                        _____ _   _ _   _  ____ _____ ___ ___  _   _ ____  
@@ -12,12 +11,13 @@ with open("config.yml", 'r') as cfg:
 #=======================================================| |_  | | | |  \| | |     | |  | | | | |  \| \___ \==========================================
 #=======================================================|  _| | |_| | |\  | |___  | |  | | |_| | |\  |___) |=========================================
 #                                                       |_|    \___/|_| \_|\____| |_| |___\___/|_| \_|____/ 
+
+def file_to_array(filename):
+    with open(filename, 'r') as file: return [item.strip() for item in file.readlines()]
+
 def generate_from_file():
  
-    with open(config['objects_file_name'], 'r') as objects_file:
-        objects_from_file = [item.strip() for item in objects_file.readlines()]
-    with open(config['actions_file_name'], 'r') as actions_file:
-        actions_from_file = [item.strip() for item in actions_file.readlines()]
+    objects_from_file, actions_from_file = file_to_array(config['objects_file_name']), file_to_array(config['actions_file_name'])
 
     result_array = []
 
@@ -39,16 +39,29 @@ def gen_pairs(pairs_array, count):
     return result_array
 
 
+def select_statement(usage_count, statements_array):
+    index = random.randint(0, (len(statements_array) - 1))
+    if usage_count[index] == 1:
+        del usage_count[index]
+        return statements_array.pop(index)
+    else:
+        usage_count[index] -= 1
+        return statements_array[index]
+
+
 def gen_conditions(statements_array, questions_array):
     result = []
-    
-    for i in questions_array:
-        if random.randint(1,2) == 1 and len(statements_array) > 1:
-            result.append(((statements_array.pop(random.randint(0, (len(statements_array) - 1))), random.choice([" и ", ", или "]), statements_array.pop(random.randint(0, (len(statements_array) - 1)))), (i[0],random.choice([" ", " не "]), i[2])))
-        else:
-            result.append(((statements_array.pop(random.randint(0, (len(statements_array) - 1))), '', ''), (i[0],random.choice([" ", " не "]), i[2])))
-        statements_array.append(i)
+    usage_count = [random.randint(config['reuse_count'][0], config['reuse_count'][1])] * len(statements_array)
 
+    for i in questions_array:
+        if random.choice([True, False]) and len(statements_array) > 1: 
+            result.append((select_statement(usage_count, statements_array), random.choice([" и ", ", или "]), select_statement(usage_count, statements_array), (i[0],random.choice([" ", " не "]), i[2])))
+        else:
+            result.append((select_statement(usage_count, statements_array), '', ('', '', ''), (i[0],random.choice([" ", " не "]), i[2])))
+
+        statements_array.append(i)
+        usage_count.append(random.randint(config['reuse_count'][0], config['reuse_count'][1]))
+ 
     return result
 
 
@@ -66,12 +79,11 @@ def new_task():
     random.shuffle(conditions)
     print()
     for i in conditions:
-        print("  Если " + "".join(i[0][0]) + i[0][1] + "".join(i[0][2]) + ", то " + "".join(i[1]) + ".")
+        print("  Если " + "".join(i[0]).lower() + i[1] + "".join(i[2]).lower() + ", то " + "".join(i[3]).lower() + ".")
 
     print()
     for i in questions:
-        print(" ", f"{i[1].replace(' ', '')} {i[2].replace(' ', '')}".lstrip().capitalize(), "ли", i[0].lower(), end="?\n")
-
+        print(" ", (i[1].replace(" ", "")+" "+(i[2] + " ").replace(" ", " ли ", 1)).lstrip().rstrip().capitalize(), i[0].lower(), end="?\n")
 #                                                                __  __    _    ___ _   _ 
 #                                                               |  \/  |  / \  |_ _| \ | |
 #===============================================================| |\/| | / _ \  | ||  \| |===========================================================

@@ -1,9 +1,13 @@
-#Comment: objects_count should be >= than statements_count + questions_count
+#Comment: objects_count should be >= than statements_count + questions_count.
 tasks_count: 1
-statements_count: 5
-questions_count: 3
+statements_count: 2
+questions_count: 4 
 objects_count: 8
+reuse_count: [1, 1]
 
-#Comment: filenames should be not empty
-objects_file_name: objects.txt
-actions_file_name: actions.txt
+#Comment: Filenames shouldn't be empty.
+objects_file_name: "objects.txt"
+actions_file_name: "actions.txt"
+
+#Comment: If you do not want to receive the program output to a file, put empty string to field.
+output_file_name: ""
