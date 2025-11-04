@@ -1,9 +1,9 @@
 #Comment: objects_count should be >= than statements_count + questions_count.
-tasks_count: 1
+tasks_count: 50000
 statements_count: 2
-questions_count: 4 
+questions_count: 4
 objects_count: 8
-reuse_count: [1, 1]
+reuse_count: [1, 5]
 
 #Comment: Filenames shouldn't be empty.
 objects_file_name: "objects.txt"
