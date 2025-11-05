@@ -1,4 +1,4 @@
 # Dependencies:
 - Random library
-- YAML library
+- PyYAML library
 - Sys library
