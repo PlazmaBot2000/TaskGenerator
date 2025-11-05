@@ -10,6 +10,7 @@ reuse_count: [1, 5]
 #Comment: Filenames shouldn't be empty.
 objects_file_name: "objects.txt"
 actions_file_name: "actions.txt"
+codification: "utf-8"
 
 #Comment: If you do not want to receive the program output to a file, put empty string to field.
 output_file_name: ""
