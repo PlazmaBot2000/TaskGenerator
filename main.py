@@ -69,7 +69,7 @@ def gen_conditions(statements_array, questions_array):
         if random.randint(0,1) and len(statements_array) > 1: 
             first, second = select_statement(usage_count, statements_array), select_statement(usage_count, statements_array)
 
-            result.append((first, random.choice([" и ", ", или "]), second if second != first else ('')*3, (i[0],random.choice([" ", " не "]), i[2])))
+            result.append((first, random.choice([" и ", " или "]), second if second != first else ('')*3, (i[0],random.choice([" ", " не "]), i[2])))
         else:
             result.append((select_statement(usage_count, statements_array), '', ('')*3, (i[0],random.choice([" ", " не "]), i[2])))
 
