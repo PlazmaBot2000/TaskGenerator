@@ -44,7 +44,8 @@ def get_from_file():
     result_array = []
 
     for _ in range(config['objects_count']):
-        result_array.append(([objects_from_file.pop(random.randint(0, (len(objects_from_file) - 1))), ' ', actions_from_file.pop(random.randint(0, (len(actions_from_file) - 1)))]))
+        f = lambda a: a.pop(random.randint(0, len(a) - 1))
+        result_array.append([f(objects_from_file), ' ', f(actions_from_file)])
         
     return result_array
 
@@ -65,15 +66,15 @@ def gen_conditions(statements_array, questions_array):
     result = []
 
     for i in questions_array:
-        if random.choice([True, False]) and len(statements_array) > 1: 
+        if random.randint(0,1) and len(statements_array) > 1: 
             first, second = select_statement(usage_count, statements_array), select_statement(usage_count, statements_array)
 
-            result.append((first, random.choice([" и ", ", или "]), second if second != first else ('', '', ''), (i[0],random.choice([" ", " не "]), i[2])))
+            result.append((first, random.choice([" и ", ", или "]), second if second != first else ('')*3, (i[0],random.choice([" ", " не "]), i[2])))
         else:
-            result.append((select_statement(usage_count, statements_array), '', ('', '', ''), (i[0],random.choice([" ", " не "]), i[2])))
+            result.append((select_statement(usage_count, statements_array), '', ('')*3, (i[0],random.choice([" ", " не "]), i[2])))
 
         statements_array.append(i)
-        usage_count.append(random.randint(config['reuse_count'][0], config['reuse_count'][1]))
+        usage_count.append(random.randint(*config['reuse_count']))
     random.shuffle(result)
     return result
 
@@ -81,11 +82,11 @@ def gen_conditions(statements_array, questions_array):
 def new_task():
     objects_and_actions = get_from_file()
     statements, questions = gen_pairs(objects_and_actions, config['statements_count']), gen_pairs(objects_and_actions, config['questions_count'])
-    extra_pairs = gen_pairs(objects_and_actions, (config['conditions_count'] - config['questions_count']) if config['conditions_count'] - config['questions_count'] > 0 else 0) 
+    extra_pairs = gen_pairs(objects_and_actions, max(config['conditions_count'] - config['questions_count'], 0))
     conditions = gen_conditions(statements.copy(), questions.copy() + extra_pairs)
 
     for i in statements:
-        print("  ", *i,sep="", end=".\n")
+        print("  ", *i, sep="", end=".\n")
  
     print()
     for i in conditions:
@@ -93,7 +94,7 @@ def new_task():
 
     print()
     for i in questions:
-        print(" ", (i[1].replace(" ", "")+" "+(i[2] + " ").replace(" ", " ли ", 1)).lstrip().rstrip().capitalize(), i[0].lower(), end="?\n")
+        print(" ", (i[1].replace(" ", "")+" "+(i[2] + " ").replace(" ", " ли ", 1)).strip().capitalize(), i[0].lower(), end="?\n")
 #                                                                __  __    _    ___ _   _ 
 #                                                               |  \/  |  / \  |_ _| \ | |
 #===============================================================| |\/| | / _ \  | ||  \| |===========================================================
