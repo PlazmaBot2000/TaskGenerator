@@ -3,7 +3,7 @@ import yaml
 import sys
 
 with open("config.yml", 'r') as cfg: config = yaml.load(cfg, Loader=yaml.SafeLoader)
-if config['output_file_name'] != "": sys.stdout = open(config['output_file_name'], 'w', encoding='utf-8')
+if config['output_file_name'] != "": sys.stdout = open(config['output_file_name'], 'w', encoding='utf-16')
 
 
 #                                                        _____ _   _ _   _  ____ _____ ___ ___  _   _ ____  
@@ -13,7 +13,7 @@ if config['output_file_name'] != "": sys.stdout = open(config['output_file_name'
 #                                                       |_|    \___/|_| \_|\____| |_| |___\___/|_| \_|____/ 
 
 def file_to_array(filename):
-    with open(filename, 'r') as file: return [item.strip() for item in file.readlines()]
+    with open(filename, 'r', encoding=config['codification']) as file: return [item.strip() for item in file.readlines()]
 
 
 def select_statement(usage_c, statements_a):
@@ -45,6 +45,7 @@ def get_from_file():
 
     for _ in range(config['objects_count']):
         f = lambda a: a.pop(random.randint(0, len(a) - 1))
+        
         result_array.append([f(objects_from_file), ' ', f(actions_from_file)])
         
     return result_array
