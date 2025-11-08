@@ -13,7 +13,7 @@ if config['output_file_name'] != "": sys.stdout = open(config['output_file_name'
 #                                                       |_|    \___/|_| \_|\____| |_| |___\___/|_| \_|____/ 
 
 def file_to_array(filename):
-    with open(filename, 'r') as file: return [item.strip() for item in file.readlines()]
+    with open(filename, 'r', encoding=config['encoding']) as file: return [item.strip() for item in file.readlines()]
 
 
 def select_statement(usage_c, statements_a):
