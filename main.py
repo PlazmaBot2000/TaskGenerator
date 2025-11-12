@@ -16,15 +16,27 @@ def file_to_array(filename):
     with open(filename, 'r', encoding=config['encoding']) as file: return [item.strip() for item in file.readlines()]
 
 
-def select_statement(usage_c, statements_a):
-    index = random.randint(0, (len(statements_a) - 1))
+def calc_ans(s, p, a1, a2):
+    if s == 0:
+        return abs(p - (a1 * a2))
+    else: 
+        return abs(p - min(1, a1 + a2))
+    
+
+def select_statement(usage_c, statements_a, res):
+    print(len(statements_a) - 1)
+    print(statements_a)
+    print(usage_c)
+    print(res)
+    index = random.randint(0, (len(statements_a)) - 1)
+    print(index) 
+    print()
     if usage_c[index] == 1:
         del usage_c[index]
-        return statements_a.pop(index)
+        return (statements_a.pop(index), index)
     else:
         usage_c[index] -= 1
-        return statements_a[index]
-
+        return (statements_a[index], index)
 
 def subtract(l1, l2):
     result = []
@@ -51,46 +63,55 @@ def get_from_file():
 
 
 def gen_pairs(pairs_array, count):
-    result_array = []
+    result_pairs = []
+    result_answers = []
 
     for _ in range(count):
         index = random.randint(0, (len(pairs_array) - 1))
-        result_array.append((pairs_array[index][0], random.choice([" ", " не "]), pairs_array.pop(index)[2]))
+        answer = random.randint(0, 1)
+        result_answers.append(answer)
+        result_pairs.append((pairs_array[index][0], [" не ", " "][answer], pairs_array.pop(index)[2]))
 
-    return result_array
+    return result_pairs, result_answers
 
 
-def gen_conditions(statements_array, questions_array):
+def gen_conditions(statements_array, answers, questions_array):
     random.shuffle(questions_array)
     usage_count = [random.randint(config['reuse_count'][0], config['reuse_count'][1])] * len(statements_array)
     result = []
+    sta = []
 
     for i in questions_array:
+        cons_prefix = random.choice([0, 1])
+        first = select_statement(usage_count, statements_array, result)
         if random.randint(1,100) <= config['and_or_percent'] and len(statements_array) > 1: 
-            first, second = select_statement(usage_count, statements_array), select_statement(usage_count, statements_array)
-            while first == second:
-                second = select_statement(usage_count, statements_array)
-            spacer = random.choice([" и ", " или "])
-            
-            result.append((first, spacer , second, (i[0],random.choice([" ", " не "]), i[2])))
+            second = select_statement(usage_count, statements_array, result)
+            while first[1] == second[1]:
+                second = select_statement(usage_count, statements_array, result)
+            spacer = random.choice([0, 1]) 
+            result.append((first[0], [" и ", " или "][spacer] , second[0], (i[0], [" ", " не "][cons_prefix], i[2])))
+            answers.append(calc_ans(spacer, cons_prefix, answers[first[1]], answers[second[1]]))
         else:
-            result.append((select_statement(usage_count, statements_array), '', ('')*3, (i[0],random.choice([" ", " не "]), i[2])))
+
+            result.append((first[0], '', ('')*3, (i[0], [" ", " не "][cons_prefix], i[2])))
+            answers.append(calc_ans(0, cons_prefix, answers[first[1]], 1))
 
         statements_array.append(i)
         usage_count.append(random.randint(*config['reuse_count']))
     random.shuffle(result)
-    return result
+    return result, answers 
 
 
 def new_task():
     objects_and_actions = get_from_file()
-    statements, questions = gen_pairs(objects_and_actions, config['statements_count']), gen_pairs(objects_and_actions, config['questions_count'])
-    extra_pairs = gen_pairs(objects_and_actions, max(config['conditions_count'] - config['questions_count'], 0))
-    conditions = gen_conditions(statements.copy(), questions.copy() + extra_pairs)
+    statements, statements_answers = gen_pairs(objects_and_actions, config['statements_count'])
+    questions, qa = gen_pairs(objects_and_actions, config['questions_count'])
+    extra_pairs, ea = gen_pairs(objects_and_actions, max(config['conditions_count'] - config['questions_count'], 0))
+    conditions, ans = gen_conditions(statements.copy(), statements_answers, extra_pairs + questions.copy())
 
     for i in statements:
-        print("  ", *i, sep="", end=".\n")
- 
+        print("  ", *i, sep="", end=".\n") 
+  
     print()
     for i in conditions:
         print("  Если " + "".join(i[0]).lower() + i[1] + "".join(i[2]).lower() + ", то " + "".join(i[3]).lower() + ".")
@@ -98,6 +119,14 @@ def new_task():
     print()
     for i in questions:
         print(" ", (i[1].replace(" ", "")+" "+(i[2] + " ").replace(" ", " ли ", 1)).strip().capitalize(), i[0].lower(), end="?\n")
+
+    print()
+    n = 1
+    print(ans)
+    for i in ans[-config['questions_count']:]:
+        print(i)
+        print("  ", n, [". Нет", ". Да"][i], sep = '')
+        n += 1
 #                                                                __  __    _    ___ _   _ 
 #                                                               |  \/  |  / \  |_ _| \ | |
 #===============================================================| |\/| | / _ \  | ||  \| |===========================================================
@@ -106,4 +135,3 @@ def new_task():
 for i in range(1, config['tasks_count'] + 1):
     print("\n=============== Вариант ", i, "===============")
     new_task()
-

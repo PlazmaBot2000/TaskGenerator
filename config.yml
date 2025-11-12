@@ -1,13 +1,12 @@
 #Comment: objects_count should be >= than statements_count + conditions_count.
-#Comment: conditions_count should be >= than questions_count
-tasks_count: 10
-statements_count: 4
-and_or_percent: 100
+#Comment: conditions_count should be >= than questions_count >= statements_count
+tasks_count: 1
+statements_count: 2
 questions_count: 2
 conditions_count: 3
 objects_count: 8
 reuse_count: [1, 5]
-and_or_percent: 50
+and_or_percent: 100
 
 #Comment: Filenames shouldn't be empty.
 objects_file_name: "objects.txt"
